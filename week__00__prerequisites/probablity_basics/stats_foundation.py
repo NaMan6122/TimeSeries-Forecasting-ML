@@ -89,7 +89,7 @@ class HypothesisTest:
             raise ValueError(f"alpha must be in (0, 1), got {alpha}")
         self.alpha = alpha
 
-    def one_sample_t_test(
+    def one_sample_t_test( #Figures out if there is any significant difference btw the sample mean and the population mean.
         self,
         sample: npt.ArrayLike,
         popmean: float = 0.0,
@@ -111,7 +111,7 @@ class HypothesisTest:
             null_hypothesis=f"mean == {popmean}",
         )
 
-    def two_sample_t_test(
+    def two_sample_t_test( #Figures out if there is a difference btw two groups.
         self,
         a: npt.ArrayLike,
         b: npt.ArrayLike,
@@ -134,6 +134,32 @@ class HypothesisTest:
             reject_null=p < self.alpha,
             alpha=self.alpha,
             null_hypothesis="mean(a) == mean(b)",
+        )
+    
+    # The paired sample t-test, also known as the dependent sample t-test, 
+    # is a statistical metric tool for estimating if the mean difference 
+    # between two sets of observational data is equal to zero. In this test, 
+    # each object or entity is measured twice, resulting in two sets of observations. -> Goofle Definition.
+    def paired_t_test(
+        self,
+        a: npt.ArrayLike,
+        b: npt.ArrayLike,
+    ) -> TestResult:
+        """
+        Test H₀: mean difference between paired samples is zero.
+        """
+        a_arr = np.asarray(a, dtype=np.float64)
+        b_arr = np.asarray(b, dtype=np.float64)
+
+        stat, p = stats.ttest_rel(a_arr, b_arr)
+
+        return TestResult(
+            test_name="Paired t-test",
+            statistic=float(stat),
+            p_value=float(p),
+            reject_null=p < self.alpha,
+            alpha=self.alpha,
+            null_hypothesis="mean(a - b) == 0",
         )
 
     def __repr__(self) -> str:
