@@ -161,6 +161,28 @@ class HypothesisTest:
             alpha=self.alpha,
             null_hypothesis="mean(a - b) == 0",
         )
+    
+    # The Chi-square test of independence is a statistical hypothesis test used to determine 
+    # whether two categorical or nominal variables are likely to be related or not. -> Google Definition.
+    def chi_square_test(
+        self,
+        observed: npt.ArrayLike,
+    ) -> TestResult:
+        """
+        Test H₀: variables are independent (for contingency table).
+        """
+        obs = np.asarray(observed, dtype=np.float64)
+
+        stat, p, _, _ = stats.chi2_contingency(obs)
+
+        return TestResult(
+            test_name="Chi-square test (independence)",
+            statistic=float(stat),
+            p_value=float(p),
+            reject_null=p < self.alpha,
+            alpha=self.alpha,
+            null_hypothesis="variables are independent",
+        )
 
     def __repr__(self) -> str:
         return f"HypothesisTest(alpha={self.alpha})"
