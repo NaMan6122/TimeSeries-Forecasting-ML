@@ -183,6 +183,31 @@ class HypothesisTest:
             alpha=self.alpha,
             null_hypothesis="variables are independent",
         )
+    
+    # The Chi-square goodness of fit test is a statistical hypothesis test used to 
+    # determine whether a variable is likely to come from a specified distribution or not. 
+    # It is often used to evaluate whether sample data is representative of the full population.
+    def chi_square_gof(
+        self,
+        observed: npt.ArrayLike,
+        expected: npt.ArrayLike,
+    ) -> TestResult:
+        """
+        Test H₀: observed frequencies match expected frequencies.
+        """
+        obs = np.asarray(observed, dtype=np.float64)
+        exp = np.asarray(expected, dtype=np.float64)
+
+        stat, p = stats.chisquare(f_obs=obs, f_exp=exp)
+
+        return TestResult(
+            test_name="Chi-square test (goodness-of-fit)",
+            statistic=float(stat),
+            p_value=float(p),
+            reject_null=p < self.alpha,
+            alpha=self.alpha,
+            null_hypothesis="observed == expected distribution",
+        )
 
     def __repr__(self) -> str:
         return f"HypothesisTest(alpha={self.alpha})"
