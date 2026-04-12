@@ -212,6 +212,69 @@ class HypothesisTest:
     def __repr__(self) -> str:
         return f"HypothesisTest(alpha={self.alpha})"
     
+# ---------------------------------------------------------------------------
+# Normality checking
+# ---------------------------------------------------------------------------
+
+class NormalityChecker: #Basic ides is: Does my data behave like a normal (Gaussian) distribution?
+    """
+    Check whether a sample is consistent with a normal distribution.
+
+    Used primarily to validate OLS residuals and, later, ARIMA residuals.
+
+    Methods
+    -------
+    shapiro_wilk  : most powerful for n < 50; also good up to n ≈ 5000
+    ks_test       : Kolmogorov-Smirnov against N(μ, σ)
+    summary       : run all tests and return a dict of results
+    """
+
+    def __init__(self, alpha: float = 0.05) -> None:
+        self.alpha = alpha
+
+    def shapiro_wilk(self, sample: npt.ArrayLike) -> TestResult:
+        """
+        H₀: the data comes from a normal distribution.
+        Reject if p < alpha → evidence against normality.
+        """
+        arr = np.asarray(sample, dtype=np.float64)
+        stat, p = stats.shapiro(arr)
+        return TestResult(
+            test_name="Shapiro-Wilk",
+            statistic=float(stat),
+            p_value=float(p),
+            reject_null=p < self.alpha,
+            alpha=self.alpha,
+            null_hypothesis="data is normally distributed",
+        )
+
+    def ks_test(self, sample: npt.ArrayLike) -> TestResult:
+        """
+        Kolmogorov-Smirnov test against N(sample_mean, sample_std).
+        """
+        arr = np.asarray(sample, dtype=np.float64)
+        # Standardise using sample statistics (Lilliefors correction
+        # would be more precise but scipy.stats.kstest is fine for our purposes)
+        stat, p = stats.kstest(arr, "norm", args=(arr.mean(), arr.std(ddof=1)))
+        return TestResult(
+            test_name="Kolmogorov-Smirnov",
+            statistic=float(stat),
+            p_value=float(p),
+            reject_null=p < self.alpha,
+            alpha=self.alpha,
+            null_hypothesis="data is normally distributed",
+        )
+
+    def summary(self, sample: npt.ArrayLike) -> dict[str, TestResult]:
+        """Run all normality tests and return as a named dict."""
+        return {
+            "shapiro_wilk": self.shapiro_wilk(sample),
+            "ks_test": self.ks_test(sample),
+        }
+
+    def __repr__(self) -> str:
+        return f"NormalityChecker(alpha={self.alpha})"
+    
 @dataclass
 class TestResult:
     """Holds the outcome of a hypothesis test."""
