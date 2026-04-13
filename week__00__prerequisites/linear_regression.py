@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 import numpy as np
@@ -177,7 +177,7 @@ class OLSRegression:
         self._assert_fitted()
         from scipy import stats
 
-        e = self._result.residuals  # type: ignore[union-attr]
+        e = self._result.residuals
         skew, _ = stats.skewtest(e)
         kurt, _ = stats.kurtosistest(e)
         _, shapiro_p = stats.shapiro(e)

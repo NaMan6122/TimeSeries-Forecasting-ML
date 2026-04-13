@@ -18,5 +18,5 @@ x_original = x[:-1]
 cov_auto = np.cov(x_original, x_lag1)[0,1]
 print(f"Autocovariance (lag 1): {cov_auto:.4f}")    # not zero by chance
 
-y = 2*x + np.random.randn(1000) * 0.1; #Sim for High CoVariance.
+y = 2 * x + np.random.randn(100) * 0.1 # Sim for High CoVariance.
 print(np.cov(x, y)[0,1])

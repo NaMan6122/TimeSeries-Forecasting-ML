@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -291,4 +290,3 @@ class TestResult:
             f"{self.test_name}: stat={self.statistic:.4f}, "
             f"p={self.p_value:.4f} → {decision} (α={self.alpha})"
         )
-
