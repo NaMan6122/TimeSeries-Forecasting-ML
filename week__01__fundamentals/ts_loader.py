@@ -29,6 +29,7 @@ class LoadSummary:
     missing_count: int
     has_duplicates: bool
     is_constant: bool
+    freq: Optional[str] = None
     warnings: list[str] = field(default_factory=list)
 
     def __repr__(self) -> str:
